@@ -12,3 +12,21 @@ line-height:500px;
 text-align:center;
 background:#000
 }
+#GroundBottom{
+	 width: 2000px;
+	 border-top: thick solid blue;
+	 position: absolute;
+	 top: 50px;
+}
+#VerticalLeftLine{
+	 height: 2000px;
+	 border-left: thick solid blue;
+	 position: absolute;
+	 left: 50px;
+}
+#VerticalRightLine{
+	 height: 2000px;
+	 border-left: thick solid blue;
+	 position: absolute;
+	 left: 50px;
+}

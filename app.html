@@ -4,19 +4,29 @@
 	<script language="javascript" type="text/javascript" src="jquery-2.1.1.js"></script>
 </head>
 <div id class="circle"></div>
+<div id="GroundBottom"></div>
+<div id="VerticalLeftLine"></div>
+<div id="VerticalRightLine"></div>
 <script type="text/javascript">
 	$( document ).ready(function() {
-		var gravity=0.3;
-		var initVelX=2;
+		var gravity=0.7;
+		var initVelX=-100;
 		var initVelY=0;
 		var kickAmp=5;
 		var run=true;
 		var stopped = false;
-		var ground = 400;
-		var leftWall = 200;
-		var rightWall = 800;
+		var ground = 700;
+		var leftWall = 100;
+		var rightWall = 1000;
 		var bounceGain = 0.8;
-		var oscCancel = 0.3;
+		var oscCancel = 1;
+		var prevX=undefined;
+		var prevY=undefined;
+		var checkval=2;
+		var runningavg=0;
+		$("#GroundBottom").css("top",(ground+parseInt($(".circle").css("height")))+'px');
+		$("#VerticalLeftLine").css("left",(leftWall)+'px');
+		$("#VerticalRightLine").css("left",(rightWall+parseInt($(".circle").css("height")))+'px');
 		function setNextPos(obj,grav,startX,startY){
 			setTimeout(function(){
 				var cTime = obj.currentTime;
@@ -24,49 +34,64 @@
 				var displacementX=	initVelX*cTime;
 				var currVelX = initVelX;
 				var currVelY = grav*cTime+initVelY;
-				var nextY=parseInt(startY+displacementY);
-				var nextX=parseInt(startX+displacementX);
+				var nY = startY+displacementY;
+				var nX = startX+displacementX;
+				var nextY=parseInt(nY);
+				var nextX=parseInt(nX);
 				obj.css("top",nextY+'px');
 				obj.css("left",nextX+'px');
 				obj.currentTime=cTime+1;
 				var setToDrop=false;
+				if(prevX==undefined||prevY==undefined){
+					prevX=startX;
+					prevY=startY;
+				}
 				function checkGround(){
 					initVelY=-(currVelY*bounceGain);
-					console.log("initVelY : " + initVelY);
+					//console.log("initVelY : " + initVelY);
 					obj.css("top",ground-oscCancel);
 				}
 				function checkLeft(){
 					initVelX=-(currVelX*bounceGain);
 					initVelY= currVelY*bounceGain;
-					console.log("initVelX : "+initVelX);
+					//console.log("initVelX : "+initVelX);
 					obj.css("left",leftWall+oscCancel);
 				}
 				function checkRight(){
 					initVelX=-(currVelX*bounceGain);
 					initVelY= currVelY*bounceGain;
-					console.log("initVelX : "+initVelX);
+					//console.log("initVelX : "+initVelX);
 					obj.css("left",rightWall-oscCancel);
 				}
 				if(ground<=parseInt(obj.css("top")))	{
-					console.log("ground");
+					//console.log("ground");
 					checkGround();
 					setToDrop=true;
 				}
 				if(leftWall>=parseInt(obj.css("left")))	{
-					console.log("leftWall");
+					//console.log("leftWall");
 					checkLeft();
 					setToDrop=true;
 				}
 				if(rightWall<=parseInt(obj.css("left")))	{
-					console.log("rightWall");
+					//console.log("rightWall");
 					checkRight();
 					setToDrop=true;
 				}
-				if(setToDrop){
-					drop(obj);
+				console.log("ground : "+ground);
+				console.log("ground - parseInt(obj.css('top')) : " + (ground-parseInt(obj.css("top"))));
+				runningavg=(runningavg+ground-parseInt(obj.css("top")))/2;
+				console.log("runningavg : "+runningavg);
+				if(runningavg<checkval){
+					stopped=true;
 				}else{
-					setNextPos(obj,grav,startX,startY);
+					if(setToDrop){
+						drop(obj);
+					}else{
+						setNextPos(obj,grav,startX,startY);
+					}
 				}
+				
 			}, 10);
 		}
 
@@ -98,7 +123,6 @@
 		   	var middle = parseInt($(this).css("height"))/2;
 		   	var obj = $(this);
 		   	//$('.circle').html(relX +"--"+relY);
-			
 		   	if(!clicked){
 		   		clicked=true;
 		   		drop($(".circle"));
