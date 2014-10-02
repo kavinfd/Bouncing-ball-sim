@@ -1,0 +1,51 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="main.css"/>
+	<script language="javascript" type="text/javascript" src="jquery-2.1.1.js"></script>
+</head>
+<div id class="circle"></div>
+<script type="text/javascript">
+	$( document ).ready(function() {
+		function setNextPos(obj,gravity){
+			var cTime = obj.currentTime;
+			var nextY=parseInt((1/2)*gravity*cTime*cTime);
+			obj.css({top:nextY+'px'});
+			obj.currentTime=cTime+1;
+		}
+
+		function repeat(obj,tocallFunction,gravity){
+			setTimeout(function(){
+				tocallFunction(obj,gravity);
+				repeat(obj,tocallFunction,gravity)
+			}, 10);
+		}
+
+		function drop(obj){
+			obj.currentTime=0;
+			repeat(obj,setNextPos,1);
+		}
+		/* 	jQuery(function($) {
+		   var currentMousePos = { x: -1, y: -1 };
+		    $(document).mousemove(function(event) {
+		        currentMousePos.x = event.pageX;
+		        currentMousePos.y = event.pageY;
+		        var d = $('.circle');
+		        //$('.circle').html(currentMousePos.x+"<br/>"+currentMousePos.y);
+		       // $('.circle').html(parseInt(d.css("left")));
+		        d.css({left: (currentMousePos.x-parseInt(parseInt(d.css("width"))/2))+'px'});
+		        d.css({top: (currentMousePos.y-parseInt(parseInt(d.css("height"))/2))+'px'});
+
+		    });
+		});*/
+		$(".circle").click(function(e){
+		   var parentOffset = $(this).parent().offset(); //if you really just want the current element's offset
+		   var relX = e.pageX - parentOffset.left;
+		   var relY = e.pageY - parentOffset.top;
+		   $('.circle').html(relX +"--"+relY);
+		   drop($(this));
+		});
+	});
+	
+	
+</script>
+</html>
