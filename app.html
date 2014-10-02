@@ -6,23 +6,24 @@
 <div id class="circle"></div>
 <script type="text/javascript">
 	$( document ).ready(function() {
-		function setNextPos(obj,gravity){
-			var cTime = obj.currentTime;
-			var nextY=parseInt((1/2)*gravity*cTime*cTime);
-			obj.css({top:nextY+'px'});
-			obj.currentTime=cTime+1;
-		}
+		
 
-		function repeat(obj,tocallFunction,gravity){
+		function setNextPos(obj,gravity){
 			setTimeout(function(){
-				tocallFunction(obj,gravity);
-				repeat(obj,tocallFunction,gravity)
+				function repeat(obj){
+					var cTime = obj.currentTime;
+					var nextY=parseInt((1/2)*gravity*cTime*cTime);
+					obj.css({top:nextY+'px'});
+					obj.currentTime=cTime+1;
+				}
+				repeat(obj);
+				setNextPos(obj,gravity);
 			}, 10);
 		}
 
 		function drop(obj){
 			obj.currentTime=0;
-			repeat(obj,setNextPos,1);
+			setNextPos(obj,1);
 		}
 		/* 	jQuery(function($) {
 		   var currentMousePos = { x: -1, y: -1 };
