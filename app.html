@@ -6,17 +6,30 @@
 <div id class="circle"></div>
 <script type="text/javascript">
 	$( document ).ready(function() {
-		var gravity=0.3;
-		function setNextPos(obj,grav,startX,startY){
+		var gravity=0.03;
+		var Xvelocity=0;
+		var Yvelocity=0;
+		var run=true;
+		var stopped = false;
+		var ground = 400;
+		var bounceLoss = 10;
+		function setNextPos(obj,grav,startX,startY,velocityX,velocityY){
 			setTimeout(function(){
-				function repeat(obj){
 					var cTime = obj.currentTime;
-					var nextY=startY+parseInt((1/2)*grav*cTime*cTime);
-					obj.css({top:nextY+'px'});
+					var displacementY = (1/2)*grav*cTime*cTime+velocityY*cTime;
+					var displacementX=velocityX*cTime;
+					var velocity = grav*cTime;
+					var nextY=parseInt(startY+displacementY);
+					var nextX=parseInt(startX+displacementX);
+					obj.css("top",nextY+'px');
+					obj.css("left",nextX+'px');
 					obj.currentTime=cTime+1;
+				
+				if(ground>parseInt(obj.css("top")))	{
+					setNextPos(obj,grav,startX,startY,velocityX,velocityY);
+				}else{
+					//setNextPos(obj,grav,startX,startY,velocityX,velocityY)
 				}
-				repeat(obj);
-				setNextPos(obj,grav,startX,startY);
 			}, 10);
 		}
 
@@ -24,7 +37,7 @@
 			obj.currentTime=0;
 			var currX = parseInt(obj.css("left"));
 			var currY = parseInt(obj.css("top"));
-			setNextPos(obj,gravity,currX,currY);
+			setNextPos(obj,gravity,currX,currY,Xvelocity,Yvelocity);
 		}
 		/* 	jQuery(function($) {
 		   var currentMousePos = { x: -1, y: -1 };
@@ -40,11 +53,11 @@
 		    });
 		});*/
 		$(".circle").click(function(e){
-		   var parentOffset = $(this).parent().offset(); //if you really just want the current element's offset
-		   var relX = e.pageX - parentOffset.left;
-		   var relY = e.pageY - parentOffset.top;
-		   $('.circle').html(relX +"--"+relY);
-		   drop($(this));
+		   	var parentOffset = $(this).parent().offset(); //if you really just want the current element's offset
+		   	var relX = e.pageX - parentOffset.left;
+		   	var relY = e.pageY - parentOffset.top;
+		   	$('.circle').html(relX +"--"+relY);
+		   	drop($(this));
 		});
 	});
 	
