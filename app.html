@@ -7,31 +7,63 @@
 <script type="text/javascript">
 	$( document ).ready(function() {
 		var gravity=0.3;
-		var initVelX=0;
-		var initVelY=-3;
+		var initVelX=2;
+		var initVelY=0;
+		var kickAmp=1;
 		var run=true;
 		var stopped = false;
 		var ground = 400;
-		var bounceLoss = 2;
+		var leftWall = 200;
+		var rightWall = 800;
+		var bounceGain = 0.8;
+		var oscCancel = 0.3;
 		function setNextPos(obj,grav,startX,startY){
 			setTimeout(function(){
-					var cTime = obj.currentTime;
-					var displacementY = (1/2)*grav*cTime*cTime+initVelY*cTime;
-					var displacementX=	initVelX*cTime;
-					var currVelX = grav*cTime+initVelX;
-					var currVelY = grav*cTime+initVelY;
-					var nextY=parseInt(startY+displacementY);
-					var nextX=parseInt(startX+displacementX);
-					obj.css("top",nextY+'px');
-					obj.css("left",nextX+'px');
-					obj.currentTime=cTime+1;
-					console.log(currVelY);
-				if(ground>parseInt(obj.css("top")))	{
-					setNextPos(obj,grav,startX,startY);
-				}else{
-					initVelY=-(currVelY-bounceLoss);
-					obj.css("top",ground-1);
+				var cTime = obj.currentTime;
+				var displacementY = (1/2)*grav*cTime*cTime+initVelY*cTime;
+				var displacementX=	initVelX*cTime;
+				var currVelX = initVelX;
+				var currVelY = grav*cTime+initVelY;
+				var nextY=parseInt(startY+displacementY);
+				var nextX=parseInt(startX+displacementX);
+				obj.css("top",nextY+'px');
+				obj.css("left",nextX+'px');
+				obj.currentTime=cTime+1;
+				var setToDrop=false;
+				function checkGround(){
+					initVelY=-(currVelY*bounceGain);
+					console.log("initVelY : " + initVelY);
+					obj.css("top",ground-oscCancel);
+				}
+				function checkLeft(){
+					initVelX=-(currVelX*bounceGain);
+					console.log("initVelX : "+initVelX);
+					obj.css("left",leftWall+oscCancel);
+				}
+				function checkRight(){
+					initVelX=-(currVelX*bounceGain);
+					console.log("initVelX : "+initVelX);
+					obj.css("left",rightWall-oscCancel);
+				}
+				if(ground<=parseInt(obj.css("top")))	{
+					console.log("ground");
+					checkGround();
+					setToDrop=true;
+				}
+				if(leftWall>=parseInt(obj.css("left")))	{
+					console.log("leftWall");
+					checkLeft();
+					setToDrop=true;
+				}
+				if(rightWall<=parseInt(obj.css("left")))	{
+					console.log("rightWall");
+					checkRight();
+					setToDrop=true;
+				}
+				if(setToDrop){
 					drop(obj);
+				}else{
+					setNextPos(obj,grav,startX,startY);
 				}
 			}, 10);
 		}
@@ -42,7 +74,7 @@
 			var currY = parseInt(obj.css("top"));
 			setNextPos(obj,gravity,currX,currY);
 		}
-		/* 	jQuery(function($) {
+		/*	jQuery(function($) {
 		   var currentMousePos = { x: -1, y: -1 };
 		    $(document).mousemove(function(event) {
 		        currentMousePos.x = event.pageX;
@@ -55,12 +87,44 @@
 
 		    });
 		});*/
+
+		var clicked=false;
 		$(".circle").click(function(e){
-		   	var parentOffset = $(this).parent().offset(); //if you really just want the current element's offset
+		   	var parentOffset = $(this).offset(); //if you really just want the current element's offset
 		   	var relX = e.pageX - parentOffset.left;
 		   	var relY = e.pageY - parentOffset.top;
-		   	$('.circle').html(relX +"--"+relY);
-		   	drop($(this));
+		   	var middle = parseInt($(this).css("height"))/2;
+		   	var obj = $(this);
+		   	//$('.circle').html(relX +"--"+relY);
+			
+		   	if(!clicked){
+		   		clicked=true;
+		   		drop($(".circle"));
+		   	}else{
+			 /*  	var xvector;
+			   	var yvector;
+
+			   	if(relX<=middle){
+			   		xvector=(middle-relX);
+			   	}else{
+			   		xvector=-(relX-middle);
+			   	}
+
+			   	if(relY<=middle){
+			   		yvector=(middle-relY);
+			   	}else{
+			   		yvector=-(relY-middle);
+			   	}
+			   	var normalizedXvector = xvector/middle;
+			   	var normalizedYvector = yvector/middle;
+				obj.currentTime=0;
+				var currX = parseInt(obj.css("left"));
+				var currY = parseInt(obj.css("top"));
+			   	console.log(normalizedXvector);
+				console.log(normalizedYvector);
+			   	initVelX=normalizedXvector*kickAmp;
+			   	initVelY=normalizedYvector*kickAmp;*/
+		   	}
 		});
 	});
 	
