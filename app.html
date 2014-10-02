@@ -9,7 +9,7 @@
 		var gravity=0.3;
 		var initVelX=2;
 		var initVelY=0;
-		var kickAmp=1;
+		var kickAmp=5;
 		var run=true;
 		var stopped = false;
 		var ground = 400;
@@ -37,11 +37,13 @@
 				}
 				function checkLeft(){
 					initVelX=-(currVelX*bounceGain);
+					initVelY= currVelY*bounceGain;
 					console.log("initVelX : "+initVelX);
 					obj.css("left",leftWall+oscCancel);
 				}
 				function checkRight(){
 					initVelX=-(currVelX*bounceGain);
+					initVelY= currVelY*bounceGain;
 					console.log("initVelX : "+initVelX);
 					obj.css("left",rightWall-oscCancel);
 				}
@@ -101,7 +103,7 @@
 		   		clicked=true;
 		   		drop($(".circle"));
 		   	}else{
-			 /*  	var xvector;
+			   	var xvector;
 			   	var yvector;
 
 			   	if(relX<=middle){
@@ -123,7 +125,7 @@
 			   	console.log(normalizedXvector);
 				console.log(normalizedYvector);
 			   	initVelX=normalizedXvector*kickAmp;
-			   	initVelY=normalizedYvector*kickAmp;*/
+			   	initVelY=normalizedYvector*kickAmp;
 		   	}
 		});
 	});
