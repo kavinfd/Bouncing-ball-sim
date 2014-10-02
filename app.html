@@ -7,18 +7,18 @@
 <script type="text/javascript">
 	$( document ).ready(function() {
 		var gravity=0.03;
-		var Xvelocity=0;
-		var Yvelocity=0;
+		var initVelX=0;
+		var initVelY=0;
 		var run=true;
 		var stopped = false;
 		var ground = 400;
 		var bounceLoss = 10;
-		function setNextPos(obj,grav,startX,startY,velocityX,velocityY){
+		function setNextPos(obj,grav,startX,startY){
 			setTimeout(function(){
 					var cTime = obj.currentTime;
-					var displacementY = (1/2)*grav*cTime*cTime+velocityY*cTime;
-					var displacementX=velocityX*cTime;
-					var velocity = grav*cTime;
+					var displacementY = (1/2)*grav*cTime*cTime+initVelY*cTime;
+					var displacementX=initVelX*cTime;
+					var  velocity = grav*cTime;
 					var nextY=parseInt(startY+displacementY);
 					var nextX=parseInt(startX+displacementX);
 					obj.css("top",nextY+'px');
@@ -26,9 +26,9 @@
 					obj.currentTime=cTime+1;
 				
 				if(ground>parseInt(obj.css("top")))	{
-					setNextPos(obj,grav,startX,startY,velocityX,velocityY);
+					setNextPos(obj,grav,startX,startY);
 				}else{
-					//setNextPos(obj,grav,startX,startY,velocityX,velocityY)
+					//setNextPos(obj,grav,startX,startY)
 				}
 			}, 10);
 		}
@@ -37,7 +37,7 @@
 			obj.currentTime=0;
 			var currX = parseInt(obj.css("left"));
 			var currY = parseInt(obj.css("top"));
-			setNextPos(obj,gravity,currX,currY,Xvelocity,Yvelocity);
+			setNextPos(obj,gravity,currX,currY);
 		}
 		/* 	jQuery(function($) {
 		   var currentMousePos = { x: -1, y: -1 };
