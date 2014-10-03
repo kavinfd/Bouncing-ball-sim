@@ -9,10 +9,10 @@
 <div id="VerticalRightLine"></div>
 <script type="text/javascript">
 	$( document ).ready(function() {
-		var gravity=0.7;
-		var initVelX=-100;
+		var gravity=0.3;
+		var initVelX=0;
 		var initVelY=0;
-		var kickAmp=5;
+		var kickAmp=8;
 		var run=true;
 		var stopped = false;
 		var ground = 700;
@@ -24,6 +24,7 @@
 		var prevY=undefined;
 		var checkval=2;
 		var runningavg=0;
+		var kicked=false;
 		$("#GroundBottom").css("top",(ground+parseInt($(".circle").css("height")))+'px');
 		$("#VerticalLeftLine").css("left",(leftWall)+'px');
 		$("#VerticalRightLine").css("left",(rightWall+parseInt($(".circle").css("height")))+'px');
@@ -46,6 +47,7 @@
 					prevX=startX;
 					prevY=startY;
 				}
+				
 				function checkGround(){
 					initVelY=-(currVelY*bounceGain);
 					//console.log("initVelY : " + initVelY);
@@ -78,10 +80,14 @@
 					checkRight();
 					setToDrop=true;
 				}
-				console.log("ground : "+ground);
-				console.log("ground - parseInt(obj.css('top')) : " + (ground-parseInt(obj.css("top"))));
+				//console.log("ground : "+ground);
+				//console.log("ground - parseInt(obj.css('top')) : " + (ground-parseInt(obj.css("top"))));
+				if(kicked){
+					kicked=false;
+					checkGround();
+				}
 				runningavg=(runningavg+ground-parseInt(obj.css("top")))/2;
-				console.log("runningavg : "+runningavg);
+				//console.log("runningavg : "+runningavg);
 				if(runningavg<checkval){
 					stopped=true;
 				}else{
@@ -127,29 +133,44 @@
 		   		clicked=true;
 		   		drop($(".circle"));
 		   	}else{
-			   	var xvector;
-			   	var yvector;
-
+			   	var Xpoint;
+			   	var Ypoint;
+			   	kicked=true;
 			   	if(relX<=middle){
-			   		xvector=(middle-relX);
+			   		Xpoint=(middle-relX);
 			   	}else{
-			   		xvector=-(relX-middle);
+			   		Xpoint=-(relX-middle);
 			   	}
 
 			   	if(relY<=middle){
-			   		yvector=(middle-relY);
+			   		Ypoint=0;//(middle-relY);
 			   	}else{
-			   		yvector=-(relY-middle);
+			   		Ypoint=-(relY-middle);
 			   	}
-			   	var normalizedXvector = xvector/middle;
-			   	var normalizedYvector = yvector/middle;
+			  	var normalizedXpoint = Xpoint/middle;
+			   	var normalizedYpoint = Ypoint/middle;
+				if(normalizedXpoint<0){
+			   		normalizedXpoint=(normalizedXpoint+1)*-1;
+			   	}else{
+			   		normalizedXpoint=(normalizedXpoint-1)*-1;
+			   	}
+			   	if(normalizedYpoint<0){
+			   		normalizedYpoint=(normalizedYpoint+1)*-1;
+			   	}else{
+			   		normalizedYpoint=(normalizedYpoint+1)*-1;
+			   	}
 				obj.currentTime=0;
 				var currX = parseInt(obj.css("left"));
 				var currY = parseInt(obj.css("top"));
-			   	console.log(normalizedXvector);
-				console.log(normalizedYvector);
-			   	initVelX=normalizedXvector*kickAmp;
-			   	initVelY=normalizedYvector*kickAmp;
+			   	console.log(normalizedXpoint);
+				console.log(normalizedYpoint);
+			   	initVelX=normalizedXpoint*kickAmp;
+			   	initVelY=normalizedYpoint*kickAmp;
+			   	if(stopped){
+			   		runningavg=checkval*10;
+			   		stopped=false;
+		   			drop($(".circle"));
+			   	}
 		   	}
 		});
 	});
